@@ -1,0 +1,87 @@
+sqlalchemy.exc.OperationalError
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such column: energy_data.voltage
+[SQL: SELECT energy_data.id AS energy_data_id, energy_data.timestamp AS energy_data_timestamp, energy_data.energy_produced AS energy_data_energy_produced, energy_data.energy_consumed AS energy_data_energy_consumed, energy_data.efficiency AS energy_data_efficiency, energy_data.current_load AS energy_data_current_load, energy_data.facility_id AS energy_data_facility_id, energy_data.voltage AS energy_data_voltage, energy_data.current AS energy_data_current, energy_data.frequency AS energy_data_frequency, energy_data.power_factor AS energy_data_power_factor, energy_data.alert_message AS energy_data_alert_message, energy_data.alert_level AS energy_data_alert_level 
+FROM energy_data 
+WHERE energy_data.timestamp >= ? ORDER BY energy_data.timestamp DESC
+ LIMIT ? OFFSET ?]
+[parameters: ('2025-04-23 13:26:58.841390', 1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+Traceback (most recent call last)
+File "C:\Users\dell\myenv\Lib\site-packages\sqlalchemy\engine\base.py", line 1964, in _exec_single_context
+self.dialect.do_execute(
+^
+File "C:\Users\dell\myenv\Lib\site-packages\sqlalchemy\engine\default.py", line 942, in do_execute
+cursor.execute(statement, parameters)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The above exception was the direct cause of the following exception:
+File "C:\Users\dell\myenv\Lib\site-packages\flask\app.py", line 1536, in __call__
+return self.wsgi_app(environ, start_response)
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "C:\Users\dell\myenv\Lib\site-packages\flask\app.py", line 1514, in wsgi_app
+response = self.handle_exception(e)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+File "C:\Users\dell\myenv\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+response = self.full_dispatch_request()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "C:\Users\dell\myenv\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+rv = self.handle_user_exception(e)
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "C:\Users\dell\myenv\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+rv = self.dispatch_request()
+     ^^^^^^^^^^^^^^^^^^^^^^^
+File "C:\Users\dell\myenv\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "C:\Users\dell\myenv\Lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+return current_app.ensure_sync(func)(*args, **kwargs)
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "C:\Users\dell\Downloads\EnergyLanding (2)\EnergyLanding\app.py", line 314, in dashboard
+).order_by(EnergyData.timestamp.desc()).first()
+                                        ^^^^^^^
+File "C:\Users\dell\myenv\Lib\site-packages\sqlalchemy\orm\query.py", line 2754, in first
+return self.limit(1)._iter().first()  # type: ignore
+       ^^^^^^^^^^^^^^^^^^^^^
+File "C:\Users\dell\myenv\Lib\site-packages\sqlalchemy\orm\query.py", line 2853, in _iter
+result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                              
+File "C:\Users\dell\myenv\Lib\site-packages\sqlalchemy\orm\session.py", line 2365, in execute
+return self._execute_internal(
+       
+File "C:\Users\dell\myenv\Lib\site-packages\sqlalchemy\orm\session.py", line 2251, in _execute_internal
+result: Result[Any] = compile_state_cls.orm_execute_statement(
+                      
+File "C:\Users\dell\myenv\Lib\site-packages\sqlalchemy\orm\context.py", line 305, in orm_execute_statement
+result = conn.execute(
+         
+File "C:\Users\dell\myenv\Lib\site-packages\sqlalchemy\engine\base.py", line 1416, in execute
+return meth(
+       
+File "C:\Users\dell\myenv\Lib\site-packages\sqlalchemy\sql\elements.py", line 516, in _execute_on_connection
+return connection._execute_clauseelement(
+       
+File "C:\Users\dell\myenv\Lib\site-packages\sqlalchemy\engine\base.py", line 1638, in _execute_clauseelement
+ret = self._execute_context(
+      
+File "C:\Users\dell\myenv\Lib\site-packages\sqlalchemy\engine\base.py", line 1843, in _execute_context
+return self._exec_single_context(
+       
+File "C:\Users\dell\myenv\Lib\site-packages\sqlalchemy\engine\base.py", line 1983, in _exec_single_context
+self._handle_dbapi_exception(
+^
+File "C:\Users\dell\myenv\Lib\site-packages\sqlalchemy\engine\base.py", line 2352, in _handle_dbapi_exception
+raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "C:\Users\dell\myenv\Lib\site-packages\sqlalchemy\engine\base.py", line 1964, in _exec_single_context
+self.dialect.do_execute(
+^
+File "C:\Users\dell\myenv\Lib\site-packages\sqlalchemy\engine\default.py", line 942, in do_execute
+cursor.execute(statement, parameters)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such column: energy_data.voltage
+[SQL: SELECT energy_data.id AS energy_data_id, energy_data.timestamp AS energy_data_timestamp, energy_data.energy_produced AS energy_data_energy_produced, energy_data.energy_consumed AS energy_data_energy_consumed, energy_data.efficiency AS energy_data_efficiency, energy_data.current_load AS energy_data_current_load, energy_data.facility_id AS energy_data_facility_id, energy_data.voltage AS energy_data_voltage, energy_data.current AS energy_data_current, energy_data.frequency AS energy_data_frequency, energy_data.power_factor AS energy_data_power_factor, energy_data.alert_message AS energy_data_alert_message, energy_data.alert_level AS energy_data_alert_level
+FROM energy_data
+WHERE energy_data.timestamp >= ? ORDER BY energy_data.timestamp DESC
+LIMIT ? OFFSET ?]
+[parameters: ('2025-04-23 13:26:58.841390', 1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)

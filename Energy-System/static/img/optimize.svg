@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="300" rx="8" fill="#f8f9fa"/>
+  
+  <!-- Settings gear -->
+  <circle cx="200" cy="150" r="70" fill="#ecf0f1"/>
+  <circle cx="200" cy="150" r="50" fill="#3498db"/>
+  <circle cx="200" cy="150" r="40" fill="#2c3e50"/>
+  
+  <!-- Gear teeth -->
+  <rect x="195" y="70" width="10" height="30" fill="#bdc3c7"/>
+  <rect x="195" y="200" width="10" height="30" fill="#bdc3c7"/>
+  <rect x="120" y="145" width="30" height="10" fill="#bdc3c7"/>
+  <rect x="250" y="145" width="30" height="10" fill="#bdc3c7"/>
+  
+  <!-- Diagonal teeth -->
+  <rect x="155" y="90" width="10" height="30" transform="rotate(-45 155 90)" fill="#bdc3c7"/>
+  <rect x="235" y="90" width="10" height="30" transform="rotate(45 235 90)" fill="#bdc3c7"/>
+  <rect x="155" y="210" width="10" height="30" transform="rotate(45 155 210)" fill="#bdc3c7"/>
+  <rect x="235" y="210" width="10" height="30" transform="rotate(-45 235 210)" fill="#bdc3c7"/>
+  
+  <!-- Central hub -->
+  <circle cx="200" cy="150" r="15" fill="#f1c40f"/>
+  <circle cx="200" cy="150" r="10" fill="#e67e22"/>
+  <circle cx="200" cy="150" r="5" fill="#d35400"/>
+  
+  <!-- Optimization arrows -->
+  <path d="M100,50 L120,30 L140,50" stroke="#2ecc71" stroke-width="5" fill="none"/>
+  <path d="M120,30 L120,90" stroke="#2ecc71" stroke-width="5" fill="none"/>
+  
+  <path d="M300,50 L280,30 L260,50" stroke="#2ecc71" stroke-width="5" fill="none"/>
+  <path d="M280,30 L280,90" stroke="#2ecc71" stroke-width="5" fill="none"/>
+  
+  <path d="M100,250 L120,270 L140,250" stroke="#2ecc71" stroke-width="5" fill="none"/>
+  <path d="M120,270 L120,210" stroke="#2ecc71" stroke-width="5" fill="none"/>
+  
+  <path d="M300,250 L280,270 L260,250" stroke="#2ecc71" stroke-width="5" fill="none"/>
+  <path d="M280,270 L280,210" stroke="#2ecc71" stroke-width="5" fill="none"/>
+  
+  <!-- Energy Icons -->
+  <path d="M60,150 L80,130 L70,150 L90,130" stroke="#f1c40f" stroke-width="3" fill="none"/>
+  <path d="M310,150 L330,130 L320,150 L340,130" stroke="#f1c40f" stroke-width="3" fill="none"/>
+  
+  <!-- Dollar signs - savings -->
+  <text x="70" y="210" font-family="Arial" font-size="24" font-weight="bold" fill="#27ae60">$</text>
+  <text x="320" y="210" font-family="Arial" font-size="24" font-weight="bold" fill="#27ae60">$</text>
+  <text x="110" y="120" font-family="Arial" font-size="24" font-weight="bold" fill="#27ae60">$</text>
+  <text x="290" y="120" font-family="Arial" font-size="24" font-weight="bold" fill="#27ae60">$</text>
+  
+  <!-- Chart showing optimization -->
+  <rect x="320" y="50" width="50" height="80" rx="3" fill="#ffffff" stroke="#e0e0e0" stroke-width="1"/>
+  <path d="M325,120 L335,110 L345,100 L355,85 L365,70" stroke="#2ecc71" stroke-width="2" fill="none"/>
+  <line x1="325" y1="70" x2="365" y2="70" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2"/>
+  
+  <!-- Chart showing reduced consumption -->
+  <rect x="30" y="50" width="50" height="80" rx="3" fill="#ffffff" stroke="#e0e0e0" stroke-width="1"/>
+  <path d="M35,90 L45,95 L55,85 L65,80 L75,70" stroke="#3498db" stroke-width="2" fill="none"/>
+  <line x1="35" y1="70" x2="75" y2="70" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2"/>
+  
+  <!-- Text label -->
+  <text x="145" y="245" font-family="Arial" font-size="14" font-weight="bold" fill="#34495e">Optimize & Save</text>
+</svg>

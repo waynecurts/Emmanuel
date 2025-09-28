@@ -1,0 +1,63 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-body">
+            <h3 class="mb-4">Display Settings</h3>
+
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="darkModeToggle" checked>
+                <label class="form-check-label" for="darkModeToggle">Dark Mode</label>
+            </div>
+            <div class="mb-4">
+                <h5>Profile Settings</h5>
+                <p class="text-muted">Manage your profile information in the <a href="{{ url_for('profile') }}">Profile page</a>.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const darkModeToggle = document.getElementById('darkModeToggle');
+const root = document.documentElement;
+
+function setTheme(isDark) {
+    const theme = isDark ? 'dark' : 'light';
+    root.setAttribute('data-bs-theme', theme);
+    
+    if (isDark) {
+        document.body.style.backgroundColor = '#212529';
+        document.querySelectorAll('.bg-dark-subtle').forEach(el => {
+            el.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+        });
+        document.querySelectorAll('.card').forEach(el => {
+            el.style.backgroundColor = '#2c3034';
+        });
+    } else {
+        document.body.style.backgroundColor = '#ffffff';
+        document.querySelectorAll('.bg-dark-subtle').forEach(el => {
+            el.style.backgroundColor = 'rgba(0, 0, 0, 0.05)';
+        });
+        document.querySelectorAll('.card').forEach(el => {
+            el.style.backgroundColor = '#ffffff';
+        });
+    }
+    
+    localStorage.setItem('theme', theme);
+    darkModeToggle.checked = isDark;
+}
+
+// Load saved theme preference
+const savedTheme = localStorage.getItem('theme') || 'dark';
+setTheme(savedTheme === 'dark');
+
+// Toggle theme when switch is clicked
+darkModeToggle.addEventListener('change', (e) => {
+    setTheme(e.target.checked);
+});
+</script>
+{% endblock %}

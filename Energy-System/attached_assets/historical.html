@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">Historical Analysis</h2>
+            <a href="/" class="btn btn-outline-secondary">
+                <i data-feather="arrow-left" class="me-2"></i>
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <i data-feather="bar-chart" class="me-2"></i>
+                    <h5 class="card-title mb-0">Production Statistics</h5>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">Average</span>
+                        <span class="stat-value text-success">{{ "%.1f"|format(trend_analysis.statistics.production.mean) }} kWh</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Maximum</span>
+                        <span class="stat-value text-success">{{ "%.1f"|format(trend_analysis.statistics.production.max) }} kWh</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Minimum</span>
+                        <span class="stat-value text-success">{{ "%.1f"|format(trend_analysis.statistics.production.min) }} kWh</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Std Dev</span>
+                        <span class="stat-value text-success">{{ "%.1f"|format(trend_analysis.statistics.production.std) }} kWh</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <i data-feather="activity" class="me-2"></i>
+                    <h5 class="card-title mb-0">Consumption Statistics</h5>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">Average</span>
+                        <span class="stat-value text-danger">{{ "%.1f"|format(trend_analysis.statistics.consumption.mean) }} kWh</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Maximum</span>
+                        <span class="stat-value text-danger">{{ "%.1f"|format(trend_analysis.statistics.consumption.max) }} kWh</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Minimum</span>
+                        <span class="stat-value text-danger">{{ "%.1f"|format(trend_analysis.statistics.consumption.min) }} kWh</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Std Dev</span>
+                        <span class="stat-value text-danger">{{ "%.1f"|format(trend_analysis.statistics.consumption.std) }} kWh</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-8">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <i data-feather="trending-up" class="me-2"></i>
+                    <h5 class="card-title mb-0">7-Day Energy Trends</h5>
+                </div>
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <i data-feather="clock" class="me-2"></i>
+                    <h5 class="card-title mb-0">Peak Hours Analysis</h5>
+                </div>
+                <div class="peak-hours-chart-container">
+                    <canvas id="peakHoursChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <i data-feather="cpu" class="me-2"></i>
+                    <h5 class="card-title mb-0">AI Insights</h5>
+                </div>
+                <div class="insights-container">
+                    {% for insight in insights %}
+                    <div class="alert alert-{{ insight.type }} d-flex align-items-start">
+                        {% if insight.type == 'warning' %}
+                            <i data-feather="alert-triangle" class="me-2"></i>
+                        {% elif insight.type == 'alert' %}
+                            <i data-feather="alert-circle" class="me-2"></i>
+                        {% elif insight.type == 'critical' %}
+                            <i data-feather="alert-octagon" class="me-2"></i>
+                        {% elif insight.type == 'success' %}
+                            <i data-feather="check-circle" class="me-2"></i>
+                        {% endif %}
+                        {{ insight.message }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const trendChart = new Chart(document.getElementById('trendChart').getContext('2d'), {
+    type: 'line',
+    data: {
+        labels: {{ chart_data.timestamps|tojson }},
+        datasets: [{
+            label: 'Production',
+            borderColor: 'rgb(25, 135, 84)',
+            backgroundColor: 'rgba(25, 135, 84, 0.1)',
+            borderWidth: 2,
+            tension: 0.4,
+            data: {{ chart_data.production|tojson }},
+            fill: true
+        }, {
+            label: 'Consumption',
+            borderColor: 'rgb(220, 53, 69)',
+            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+            borderWidth: 2,
+            tension: 0.4,
+            data: {{ chart_data.consumption|tojson }},
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            intersect: false,
+            mode: 'index'
+        },
+        plugins: {
+            legend: {
+                position: 'top'
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Energy (kWh)'
+                }
+            }
+        }
+    }
+});
+
+const peakHoursChart = new Chart(document.getElementById('peakHoursChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+        labels: Object.keys({{ trend_analysis.peak_hours|tojson }}),
+        datasets: [{
+            label: 'Peak Hour Frequency',
+            backgroundColor: 'rgba(255, 193, 7, 0.5)',
+            borderColor: 'rgb(255, 193, 7)',
+            borderWidth: 1,
+            data: Object.values({{ trend_analysis.peak_hours|tojson }})
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return `${context.parsed.y} occurrences`;
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Frequency'
+                }
+            },
+            x: {
+                title: {
+                    display: true,
+                    text: 'Hour of Day'
+                }
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

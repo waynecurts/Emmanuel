@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+
+{% block title %}Smart Energy Management{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="py-5 text-white" style="background: linear-gradient(90deg, #2c3e50 0%, #4a6173 100%);">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <h1 class="display-4 fw-bold animate__animated animate__fadeInLeft">Intelligent Energy Management</h1>
+                <p class="lead my-4 animate__animated animate__fadeInLeft animate__delay-1s">
+                    Make smarter decisions about your energy usage with AI-powered insights and real-time monitoring.
+                </p>
+                <div class="animate__animated animate__fadeInUp animate__delay-2s">
+                    <a href="{{ url_for('login') }}#signup" class="btn btn-primary btn-lg px-4 me-2">Get Started</a>
+                    <a href="#features" class="btn btn-outline-light btn-lg px-4">Learn More</a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center animate__animated animate__fadeInRight">
+                <div class="dashboard-img-container">
+                    <img src="{{ url_for('static', filename='img/dashboard_preview.svg') }}" alt="Dashboard Preview" class="img-fluid rounded shadow-lg">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-4 mb-4 mb-md-0">
+                <div class="card border-0 shadow-sm h-100 py-4">
+                    <div class="card-body">
+                        <h2 class="fw-bold text-primary">30%</h2>
+                        <p class="lead mb-0">Average Energy Savings</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4 mb-md-0">
+                <div class="card border-0 shadow-sm h-100 py-4">
+                    <div class="card-body">
+                        <h2 class="fw-bold text-primary">24/7</h2>
+                        <p class="lead mb-0">Real-time Monitoring</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 py-4">
+                    <div class="card-body">
+                        <h2 class="fw-bold text-primary">95%</h2>
+                        <p class="lead mb-0">Prediction Accuracy</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Powerful Features</h2>
+            <p class="lead">Everything you need to optimize your energy consumption</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-block mb-3">
+                            <span data-feather="activity" class="text-primary" style="width: 32px; height: 32px;"></span>
+                        </div>
+                        <h3 class="h4 fw-bold">Real-time Monitoring</h3>
+                        <p>Track your energy production and consumption in real-time with intuitive dashboards.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-block mb-3">
+                            <span data-feather="trending-up" class="text-primary" style="width: 32px; height: 32px;"></span>
+                        </div>
+                        <h3 class="h4 fw-bold">Predictive Analytics</h3>
+                        <p>AI-powered predictions help you anticipate future energy needs and optimize consumption.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-block mb-3">
+                            <span data-feather="bar-chart-2" class="text-primary" style="width: 32px; height: 32px;"></span>
+                        </div>
+                        <h3 class="h4 fw-bold">Historical Analysis</h3>
+                        <p>Detailed historical data analysis to identify trends and opportunities for improvement.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-block mb-3">
+                            <span data-feather="bell" class="text-primary" style="width: 32px; height: 32px;"></span>
+                        </div>
+                        <h3 class="h4 fw-bold">Smart Alerts</h3>
+                        <p>Get notified about unusual patterns or potential issues before they become critical.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-block mb-3">
+                            <span data-feather="settings" class="text-primary" style="width: 32px; height: 32px;"></span>
+                        </div>
+                        <h3 class="h4 fw-bold">Custom Reports</h3>
+                        <p>Generate detailed reports and visualizations to understand your energy profile better.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-block mb-3">
+                            <span data-feather="check-circle" class="text-primary" style="width: 32px; height: 32px;"></span>
+                        </div>
+                        <h3 class="h4 fw-bold">Optimization Tips</h3>
+                        <p>Actionable recommendations to optimize your energy usage based on your specific patterns.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">How It Works</h2>
+            <p class="lead">Simple process, powerful results</p>
+        </div>
+        
+        <div class="row align-items-center mb-5">
+            <div class="col-md-6 mb-4 mb-md-0">
+                <h3 class="fw-bold">Connect Your Energy Systems</h3>
+                <p class="lead">Easily integrate with your existing energy infrastructure to start collecting data.</p>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <span data-feather="check" class="text-success me-2"></span>
+                        Works with most energy monitoring systems
+                    </li>
+                    <li class="mb-2">
+                        <span data-feather="check" class="text-success me-2"></span>
+                        Simple plug-and-play setup
+                    </li>
+                    <li>
+                        <span data-feather="check" class="text-success me-2"></span>
+                        Secure data transmission
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6 text-center">
+                <img src="{{ url_for('static', filename='img/connect.svg') }}" alt="Connect Systems" class="img-fluid rounded shadow-sm" style="max-height: 300px;">
+            </div>
+        </div>
+        
+        <div class="row align-items-center mb-5 flex-md-row-reverse">
+            <div class="col-md-6 mb-4 mb-md-0">
+                <h3 class="fw-bold">Monitor & Analyze</h3>
+                <p class="lead">Get real-time insights and detailed analysis of your energy usage patterns.</p>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <span data-feather="check" class="text-success me-2"></span>
+                        Interactive dashboards
+                    </li>
+                    <li class="mb-2">
+                        <span data-feather="check" class="text-success me-2"></span>
+                        Custom alerts and notifications
+                    </li>
+                    <li>
+                        <span data-feather="check" class="text-success me-2"></span>
+                        Detailed historical analysis
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6 text-center">
+                <img src="{{ url_for('static', filename='img/analyze.svg') }}" alt="Monitor and Analyze" class="img-fluid rounded shadow-sm" style="max-height: 300px;">
+            </div>
+        </div>
+        
+        <div class="row align-items-center">
+            <div class="col-md-6 mb-4 mb-md-0">
+                <h3 class="fw-bold">Optimize & Save</h3>
+                <p class="lead">Implement AI-powered recommendations to reduce consumption and save money.</p>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <span data-feather="check" class="text-success me-2"></span>
+                        Actionable optimization tips
+                    </li>
+                    <li class="mb-2">
+                        <span data-feather="check" class="text-success me-2"></span>
+                        Predictive load balancing
+                    </li>
+                    <li>
+                        <span data-feather="check" class="text-success me-2"></span>
+                        Energy efficiency reports
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6 text-center">
+                <img src="{{ url_for('static', filename='img/optimize.svg') }}" alt="Optimize and Save" class="img-fluid rounded shadow-sm" style="max-height: 300px;">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">What Our Users Say</h2>
+            <p class="lead">Join thousands of satisfied customers</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card border-0 shadow-sm h-100 testimonial-card">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                <span>JD</span>
+                            </div>
+                            <div>
+                                <h5 class="mb-0">John Doe</h5>
+                                <p class="text-muted mb-0">Smart Home Owner</p>
+                            </div>
+                        </div>
+                        <p class="mb-0">"Since installing EnergyIntelligence, we've reduced our home energy bill by 25%. The predictive features are remarkably accurate!"</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card border-0 shadow-sm h-100 testimonial-card">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                <span>SJ</span>
+                            </div>
+                            <div>
+                                <h5 class="mb-0">Sarah Johnson</h5>
+                                <p class="text-muted mb-0">Office Manager</p>
+                            </div>
+                        </div>
+                        <p class="mb-0">"The insights from EnergyIntelligence have helped us optimize our office's energy consumption, leading to significant cost savings."</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card border-0 shadow-sm h-100 testimonial-card">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                <span>MR</span>
+                            </div>
+                            <div>
+                                <h5 class="mb-0">Michael Reynolds</h5>
+                                <p class="text-muted mb-0">Factory Owner</p>
+                            </div>
+                        </div>
+                        <p class="mb-0">"The detailed analytics and monitoring capabilities have revolutionized how we manage energy in our production facility."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 text-white text-center" style="background: linear-gradient(90deg, #2c3e50 0%, #4a6173 100%);">
+    <div class="container py-4">
+        <h2 class="display-5 fw-bold mb-4">Ready to optimize your energy usage?</h2>
+        <p class="lead mb-4">Join thousands of users who are saving money and reducing their carbon footprint</p>
+        <a href="{{ url_for('login') }}#signup" class="btn btn-light btn-lg px-4">Get Started Today</a>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Additional scripts specific to landing page
+    document.addEventListener('DOMContentLoaded', function() {
+        // Make sure icons are properly rendered
+        feather.replace();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,627 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <a href="#facility-section" class="list-group-item list-group-item-action active py-3 px-4" data-bs-toggle="list">
+                            <span data-feather="home" class="me-2"></span> Facility Settings
+                        </a>
+                        <a href="#notifications-section" class="list-group-item list-group-item-action py-3 px-4" data-bs-toggle="list">
+                            <span data-feather="bell" class="me-2"></span> Notifications
+                        </a>
+                        <a href="#display-section" class="list-group-item list-group-item-action py-3 px-4" data-bs-toggle="list">
+                            <span data-feather="monitor" class="me-2"></span> Display Options
+                        </a>
+                        <a href="#integrations-section" class="list-group-item list-group-item-action py-3 px-4" data-bs-toggle="list">
+                            <span data-feather="link" class="me-2"></span> Integrations
+                        </a>
+                        <a href="#data-section" class="list-group-item list-group-item-action py-3 px-4" data-bs-toggle="list">
+                            <span data-feather="database" class="me-2"></span> Data Management
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-9">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="tab-content">
+                <!-- Facility Settings -->
+                <div class="tab-pane fade show active" id="facility-section">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">Facility Settings</h4>
+                            
+                            <form method="POST" action="{{ url_for('settings') }}">
+                                <input type="hidden" name="setting_type" value="facility">
+                                
+                                <div class="mb-3">
+                                    <label for="facilityName" class="form-label">Facility Name</label>
+                                    <input type="text" class="form-control" id="facilityName" name="facility_name" value="{{ facility.name }}" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="facilityLocation" class="form-label">Location</label>
+                                    <input type="text" class="form-control" id="facilityLocation" name="facility_location" value="{{ facility.location }}" required>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="facilityCapacity" class="form-label">Capacity (kW)</label>
+                                        <input type="number" step="0.1" min="0" class="form-control" id="facilityCapacity" name="facility_capacity" value="{{ facility.capacity }}" required>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <label for="facilitySolarPanels" class="form-label">Number of Solar Panels</label>
+                                        <input type="number" min="0" class="form-control" id="facilitySolarPanels" name="facility_solar_panels" value="{{ facility.solar_panels }}" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notifications Settings -->
+                <div class="tab-pane fade" id="notifications-section">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">Notification Settings</h4>
+                            
+                            <form method="POST" action="{{ url_for('settings') }}">
+                                <input type="hidden" name="setting_type" value="notifications">
+                                
+                                <div class="mb-4">
+                                    <h5 class="mb-3">Email Notifications</h5>
+                                    
+                                    <div class="mb-3 form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="dailySummaryCheck" name="daily_summary" checked>
+                                        <label class="form-check-label" for="dailySummaryCheck">Daily Summary</label>
+                                        <div class="form-text">Receive a daily summary of your energy usage</div>
+                                    </div>
+                                    
+                                    <div class="mb-3 form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="alertsCheck" name="alerts" checked>
+                                        <label class="form-check-label" for="alertsCheck">Critical Alerts</label>
+                                        <div class="form-text">Receive notifications for critical system events</div>
+                                    </div>
+                                    
+                                    <div class="mb-3 form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="predictionsCheck" name="predictions" checked>
+                                        <label class="form-check-label" for="predictionsCheck">Prediction Updates</label>
+                                        <div class="form-text">Receive notifications about energy prediction updates</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <h5 class="mb-3">SMS Notifications</h5>
+                                    
+                                    <div class="mb-3">
+                                        <label for="phoneNumber" class="form-label">Phone Number</label>
+                                        <input type="tel" class="form-control" id="phoneNumber" name="phone_number" placeholder="+1 (123) 456-7890">
+                                    </div>
+                                    
+                                    <div class="mb-3 form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="smsAlertsCheck" name="sms_alerts">
+                                        <label class="form-check-label" for="smsAlertsCheck">Critical SMS Alerts</label>
+                                        <div class="form-text">Receive SMS notifications for critical system events only</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Display Options -->
+                <div class="tab-pane fade" id="display-section">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">Display Options</h4>
+                            
+                            <form method="POST" action="{{ url_for('settings') }}">
+                                <input type="hidden" name="setting_type" value="display">
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Theme</label>
+                                    <div class="d-flex gap-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="theme" id="lightTheme" value="light" {% if session.get('theme') != 'dark' and session.get('theme') != 'system' %}checked{% endif %}>
+                                            <label class="form-check-label" for="lightTheme">Light</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="theme" id="darkTheme" value="dark" {% if session.get('theme') == 'dark' %}checked{% endif %}>
+                                            <label class="form-check-label" for="darkTheme">Dark</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="theme" id="systemTheme" value="system" {% if session.get('theme') == 'system' %}checked{% endif %}>
+                                            <label class="form-check-label" for="systemTheme">System Default</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="chartColorScheme" class="form-label">Chart Color Scheme</label>
+                                    <select class="form-select" id="chartColorScheme" name="chart_color_scheme">
+                                        <option value="default" selected>Default</option>
+                                        <option value="monochrome">Monochrome</option>
+                                        <option value="colorblind">Colorblind Friendly</option>
+                                        <option value="pastel">Pastel</option>
+                                        <option value="vivid">Vivid</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="dashboardLayout" class="form-label">Dashboard Layout</label>
+                                    <select class="form-select" id="dashboardLayout" name="dashboard_layout">
+                                        <option value="standard" selected>Standard</option>
+                                        <option value="compact">Compact</option>
+                                        <option value="expanded">Expanded</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="defaultTimeframe" class="form-label">Default Timeframe for Charts</label>
+                                    <select class="form-select" id="defaultTimeframe" name="default_timeframe">
+                                        <option value="24h" selected>24 Hours</option>
+                                        <option value="7d">7 Days</option>
+                                        <option value="30d">30 Days</option>
+                                        <option value="90d">90 Days</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Integrations -->
+                <div class="tab-pane fade" id="integrations-section">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">Integrations</h4>
+                            
+                            <div class="alert alert-info">
+                                <span data-feather="info" class="me-2"></span>
+                                Connect your energy management system with other services and devices.
+                            </div>
+                            
+                            <!-- Hardware Integration Section -->
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0">Hardware Integration</h5>
+                                    <span class="badge bg-success">Active</span>
+                                </div>
+                                
+                                <div class="card mb-4 border-0 bg-light">
+                                    <div class="card-body">
+                                        <h6 class="mb-3">Documentation and Examples</h6>
+                                        <div class="mb-3">
+                                            <div class="d-flex flex-column gap-2">
+                                                <a href="/examples/HARDWARE_INTEGRATION.md" class="text-decoration-none d-flex align-items-center" target="_blank">
+                                                    <span data-feather="file-text" class="me-2"></span>
+                                                    Hardware Integration Guide
+                                                </a>
+                                                <a href="/examples/python_sensor_client.py" class="text-decoration-none d-flex align-items-center" target="_blank">
+                                                    <span data-feather="code" class="me-2"></span>
+                                                    Python Example Client
+                                                </a>
+                                            </div>
+                                        </div>
+                                        
+                                        <h6 class="mb-3">API Endpoints</h6>
+                                        <div class="mb-3">
+                                            <label class="form-label">Data Submission Endpoint</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control bg-white" value="{{ api_endpoints.data_url }}" readonly>
+                                                <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('{{ api_endpoints.data_url }}')">
+                                                    <span data-feather="copy"></span>
+                                                </button>
+                                            </div>
+                                            <small class="text-muted">Use this endpoint to send energy data from your sensors</small>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label">Configuration Endpoint</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control bg-white" value="{{ api_endpoints.config_url }}" readonly>
+                                                <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('{{ api_endpoints.config_url }}')">
+                                                    <span data-feather="copy"></span>
+                                                </button>
+                                            </div>
+                                            <small class="text-muted">Use this endpoint to get configuration for your hardware devices</small>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label">Status Endpoint</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control bg-white" value="{{ api_endpoints.status_url }}" readonly>
+                                                <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('{{ api_endpoints.status_url }}')">
+                                                    <span data-feather="copy"></span>
+                                                </button>
+                                            </div>
+                                            <small class="text-muted">Use this endpoint to check connectivity with the server</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <form method="POST" action="{{ url_for('settings') }}">
+                                    <input type="hidden" name="setting_type" value="hardware">
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">API Key</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control bg-white" value="{{ hardware_api_key }}" id="apiKeyField" readonly>
+                                            <button class="btn btn-outline-secondary" type="button" id="toggleApiKey">
+                                                <span data-feather="eye"></span>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('{{ hardware_api_key }}')">
+                                                <span data-feather="copy"></span>
+                                            </button>
+                                        </div>
+                                        <div class="form-text">Use this API key to authenticate your hardware devices</div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="regenerateApiKey" name="regenerate_api_key">
+                                            <label class="form-check-label" for="regenerateApiKey">
+                                                Regenerate API Key
+                                            </label>
+                                            <div class="form-text text-warning">Warning: This will invalidate all existing connections!</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="reportingInterval" class="form-label">Reporting Interval (seconds)</label>
+                                        <select class="form-select" id="reportingInterval" name="reporting_interval">
+                                            <option value="60">Every minute</option>
+                                            <option value="300" selected>Every 5 minutes</option>
+                                            <option value="900">Every 15 minutes</option>
+                                            <option value="1800">Every 30 minutes</option>
+                                            <option value="3600">Every hour</option>
+                                        </select>
+                                        <div class="form-text">How often your hardware devices should send data</div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <h6>Example Hardware Devices</h6>
+                                        <p class="small">Check our <a href="/examples/HARDWARE_INTEGRATION.md" target="_blank">hardware integration guide</a> for detailed documentation.</p>
+                                        <div class="d-flex gap-2 flex-wrap">
+                                            <a href="/examples/esp8266_sensor_client.ino" class="btn btn-sm btn-outline-secondary" target="_blank">
+                                                <span data-feather="cpu" class="me-1"></span> ESP8266/ESP32 Example
+                                            </a>
+                                            <a href="/examples/python_sensor_client.py" class="btn btn-sm btn-outline-secondary" target="_blank">
+                                                <span data-feather="code" class="me-1"></span> Python Example
+                                            </a>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                        <button type="submit" class="btn btn-primary">Save Hardware Settings</button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0">Connected Services</h5>
+                                    <button type="button" class="btn btn-sm btn-outline-primary">
+                                        <span data-feather="plus" class="me-1"></span> Add Service
+                                    </button>
+                                </div>
+                                
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-light rounded p-2 me-3">
+                                                    <span data-feather="home" style="width: 24px; height: 24px;"></span>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0">Smart Home System</h6>
+                                                    <small class="text-muted">Connected since March 15, 2025</small>
+                                                </div>
+                                            </div>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="smartHomeToggle" checked>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-light rounded p-2 me-3">
+                                                    <span data-feather="cloud" style="width: 24px; height: 24px;"></span>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0">Weather Service</h6>
+                                                    <small class="text-muted">Connected since March 18, 2025</small>
+                                                </div>
+                                            </div>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="weatherToggle" checked>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h5 class="mb-3">Available Integrations</h5>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center mb-3">
+                                                    <div class="bg-light rounded p-2 me-3">
+                                                        <span data-feather="calendar" style="width: 24px; height: 24px;"></span>
+                                                    </div>
+                                                    <h6 class="mb-0">Calendar System</h6>
+                                                </div>
+                                                <p class="card-text small">Integrate with your calendar to optimize energy usage based on your schedule.</p>
+                                                <button class="btn btn-sm btn-outline-primary">Connect</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center mb-3">
+                                                    <div class="bg-light rounded p-2 me-3">
+                                                        <span data-feather="credit-card" style="width: 24px; height: 24px;"></span>
+                                                    </div>
+                                                    <h6 class="mb-0">Utility Billing</h6>
+                                                </div>
+                                                <p class="card-text small">Connect to your utility provider to receive and analyze actual billing data.</p>
+                                                <button class="btn btn-sm btn-outline-primary">Connect</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="button" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Management -->
+                <div class="tab-pane fade" id="data-section">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">Data Management</h4>
+                            
+                            <div class="mb-4">
+                                <h5 class="mb-3">Data Storage</h5>
+                                
+                                <div class="mb-3">
+                                    <label for="dataRetention" class="form-label">Data Retention Period</label>
+                                    <select class="form-select" id="dataRetention" name="data_retention">
+                                        <option value="3m">3 Months</option>
+                                        <option value="6m" selected>6 Months</option>
+                                        <option value="1y">1 Year</option>
+                                        <option value="2y">2 Years</option>
+                                        <option value="unlimited">Unlimited</option>
+                                    </select>
+                                    <div class="form-text">Choose how long to keep your historical energy data</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="dataGranularity" class="form-label">Data Collection Frequency</label>
+                                    <select class="form-select" id="dataGranularity" name="data_granularity">
+                                        <option value="1m">Every Minute</option>
+                                        <option value="5m" selected>Every 5 Minutes</option>
+                                        <option value="15m">Every 15 Minutes</option>
+                                        <option value="30m">Every 30 Minutes</option>
+                                        <option value="1h">Hourly</option>
+                                    </select>
+                                    <div class="form-text">Choose how frequently to collect energy data</div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h5 class="mb-3">Import & Export</h5>
+                                
+                                <div class="mb-3">
+                                    <div class="d-grid gap-2 d-md-flex">
+                                        <button type="button" class="btn btn-outline-primary">
+                                            <span data-feather="upload" class="me-2"></span> Import Data
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary">
+                                            <span data-feather="download" class="me-2"></span> Export Data
+                                        </button>
+                                    </div>
+                                    <div class="form-text mt-2">Import data from other systems or export your data for backup</div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h5 class="mb-3">Data Reset</h5>
+                                
+                                <div class="alert alert-danger">
+                                    <span data-feather="alert-triangle" class="me-2"></span>
+                                    Warning: Resetting your data is irreversible and will remove all historical energy data.
+                                </div>
+                                
+                                <div class="d-grid gap-2 d-md-flex">
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#resetDataModal">
+                                        <span data-feather="trash-2" class="me-2"></span> Reset Data
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reset Data Confirmation Modal -->
+<div class="modal fade" id="resetDataModal" tabindex="-1" aria-labelledby="resetDataModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resetDataModalLabel">Confirm Data Reset</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <span data-feather="alert-triangle" class="me-2"></span>
+                    <strong>Warning:</strong> This action cannot be undone.
+                </div>
+                <p>Are you sure you want to reset all your energy data? This will permanently delete all historical records and cannot be recovered.</p>
+                <div class="mb-3">
+                    <label for="confirmReset" class="form-label">Type "RESET" to confirm</label>
+                    <input type="text" class="form-control" id="confirmReset" placeholder="RESET">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmResetBtn" disabled>Reset All Data</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Feather icons
+        feather.replace();
+        
+        // Handle tab activation based on URL hash
+        if (window.location.hash) {
+            const hash = window.location.hash;
+            const tabTrigger = document.querySelector(`a[href="${hash}"]`);
+            if (tabTrigger) {
+                const tab = new bootstrap.Tab(tabTrigger);
+                tab.show();
+            }
+        }
+        
+        // Enable/disable reset confirmation button
+        const confirmResetInput = document.getElementById('confirmReset');
+        const confirmResetBtn = document.getElementById('confirmResetBtn');
+        
+        if (confirmResetInput && confirmResetBtn) {
+            confirmResetInput.addEventListener('input', function() {
+                confirmResetBtn.disabled = this.value !== 'RESET';
+            });
+        }
+        
+        // Handle API key visibility toggle
+        const toggleApiKeyBtn = document.getElementById('toggleApiKey');
+        const apiKeyField = document.getElementById('apiKeyField');
+        
+        if(toggleApiKeyBtn && apiKeyField) {
+            toggleApiKeyBtn.addEventListener('click', function() {
+                if (apiKeyField.type === 'password') {
+                    apiKeyField.type = 'text';
+                    toggleApiKeyBtn.innerHTML = '<span data-feather="eye-off"></span>';
+                } else {
+                    apiKeyField.type = 'password';
+                    toggleApiKeyBtn.innerHTML = '<span data-feather="eye"></span>';
+                }
+                feather.replace();
+            });
+            
+            // Initialize as password
+            apiKeyField.type = 'password';
+        }
+    });
+    
+    // Copy to clipboard function
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(function() {
+            showToast('Copied to clipboard');
+        }, function(err) {
+            console.error('Could not copy text: ', err);
+        });
+    }
+    
+    // Show a toast notification
+    function showToast(message) {
+        // Create toast container if it doesn't exist
+        let toastContainer = document.getElementById('toast-container');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.id = 'toast-container';
+            toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
+            document.body.appendChild(toastContainer);
+        }
+        
+        // Create toast element
+        const toastId = 'toast-' + Date.now();
+        const toastEl = document.createElement('div');
+        toastEl.className = 'toast';
+        toastEl.id = toastId;
+        toastEl.setAttribute('role', 'alert');
+        toastEl.setAttribute('aria-live', 'assertive');
+        toastEl.setAttribute('aria-atomic', 'true');
+        
+        toastEl.innerHTML = `
+            <div class="toast-header">
+                <span data-feather="check-circle" class="text-success me-2"></span>
+                <strong class="me-auto">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        `;
+        
+        toastContainer.appendChild(toastEl);
+        
+        // Initialize and show the toast
+        const toast = new bootstrap.Toast(toastEl, {
+            autohide: true,
+            delay: 3000
+        });
+        
+        toast.show();
+        
+        // Replace feather icons in toast
+        feather.replace();
+        
+        // Remove the toast element after it's hidden
+        toastEl.addEventListener('hidden.bs.toast', function () {
+            toastEl.remove();
+        });
+    }
+</script>
+{% endblock %}

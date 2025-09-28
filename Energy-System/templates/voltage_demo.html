@@ -1,0 +1,377 @@
+{% extends "base.html" %}
+
+{% block title %}Voltage Monitoring Demo{% endblock %}
+
+{% block head %}
+<style>
+    .voltage-display {
+        font-size: 3rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+    
+    .voltage-normal {
+        color: #28a745;
+    }
+    
+    .voltage-warning {
+        color: #ffc107;
+    }
+    
+    .voltage-critical {
+        color: #dc3545;
+        animation: blink 1s infinite;
+    }
+    
+    @keyframes blink {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+    }
+    
+    .reading-card {
+        transition: all 0.3s ease;
+    }
+    
+    .reading-card.updated {
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+    }
+    
+    .parameter-value {
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+    
+    .small-chart {
+        height: 150px;
+    }
+    
+    .alert-banner {
+        border-left: 5px solid;
+        border-radius: 0.25rem;
+    }
+    
+    .alert-banner.warning {
+        border-left-color: #ffc107;
+        background-color: rgba(255, 193, 7, 0.1);
+    }
+    
+    .alert-banner.critical {
+        border-left-color: #dc3545;
+        background-color: rgba(220, 53, 69, 0.1);
+    }
+    
+    .btn-condition {
+        transition: all 0.2s ease;
+    }
+    
+    .btn-condition.active {
+        transform: scale(1.05);
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="mb-0">Real-Time Voltage Monitoring Demo</h1>
+            <p class="text-muted">This demonstrates how the system detects and displays voltage conditions in real-time.</p>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Voltage Simulation Controls</h5>
+                    <p class="card-text">Select a voltage condition to simulate real-time data from a connected device:</p>
+                    
+                    <div class="btn-group mb-3 d-flex flex-wrap">
+                        <button class="btn btn-outline-primary btn-condition active" data-condition="normal">Normal Voltage</button>
+                        <button class="btn btn-outline-warning btn-condition" data-condition="high_warning">High Voltage (Warning)</button>
+                        <button class="btn btn-outline-danger btn-condition" data-condition="high_critical">High Voltage (Critical)</button>
+                        <button class="btn btn-outline-warning btn-condition" data-condition="low_warning">Low Voltage (Warning)</button>
+                        <button class="btn btn-outline-danger btn-condition" data-condition="low_critical">Low Voltage (Critical)</button>
+                        <button class="btn btn-outline-info btn-condition" data-condition="fluctuating">Fluctuating Voltage</button>
+                    </div>
+                    
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="autoUpdateCheck" checked>
+                        <label class="form-check-label" for="autoUpdateCheck">Auto-update every 3 seconds</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Current alert section, initially hidden -->
+    <div class="row mb-4" id="alertContainer" style="display: none;">
+        <div class="col-12">
+            <div class="alert-banner p-3" id="alertBanner">
+                <div class="d-flex align-items-center">
+                    <span data-feather="alert-triangle" class="me-2" id="alertIcon"></span>
+                    <div>
+                        <h5 class="mb-1" id="alertTitle">Voltage Alert</h5>
+                        <p class="mb-0" id="alertMessage"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-6 mb-4 mb-md-0">
+            <div class="card border-0 shadow-sm h-100 reading-card">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Current Voltage</h5>
+                    <div class="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div class="text-center">
+                            <div class="voltage-display voltage-normal" id="voltageDisplay">220.0<span class="h4">V</span></div>
+                            <div class="text-muted mt-2">Last updated: <span id="lastUpdated">Never</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100 reading-card">
+                <div class="card-body">
+                    <h5 class="card-title">Electrical Parameters</h5>
+                    <div class="row text-center">
+                        <div class="col-4 mb-3">
+                            <div class="small text-muted">Current</div>
+                            <div class="parameter-value" id="currentDisplay">0.0<span class="small">A</span></div>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <div class="small text-muted">Frequency</div>
+                            <div class="parameter-value" id="frequencyDisplay">0.0<span class="small">Hz</span></div>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <div class="small text-muted">Power Factor</div>
+                            <div class="parameter-value" id="powerFactorDisplay">0.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Voltage History</h5>
+                    <div class="small-chart">
+                        <canvas id="voltageChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script>
+    // Initialize voltage chart
+    const ctx = document.getElementById('voltageChart').getContext('2d');
+    const chartData = {
+        labels: [],
+        datasets: [{
+            label: 'Voltage (V)',
+            data: [],
+            fill: false,
+            borderColor: '#0d6efd',
+            tension: 0.1
+        }]
+    };
+    
+    const chartConfig = {
+        type: 'line',
+        data: chartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+                duration: 300
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    min: 180,
+                    max: 260,
+                    ticks: {
+                        stepSize: 20
+                    }
+                },
+                x: {
+                    display: true,
+                    ticks: {
+                        maxTicksLimit: 8
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    };
+    
+    const voltageChart = new Chart(ctx, chartConfig);
+    
+    // Variables for tracking data
+    let currentCondition = 'normal';
+    let updateInterval = null;
+    let chartMaxPoints = 20;
+    
+    // Function to fetch voltage data based on selected condition
+    function fetchVoltageData(condition) {
+        fetch(`/api/debug/voltage-demo?condition=${condition}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    updateVoltageDisplay(data);
+                    updateChart(data);
+                    updateAlertDisplay(data);
+                    
+                    // Flash the cards to show update
+                    const cards = document.querySelectorAll('.reading-card');
+                    cards.forEach(card => {
+                        card.classList.add('updated');
+                        setTimeout(() => card.classList.remove('updated'), 300);
+                    });
+                }
+            })
+            .catch(error => console.error('Error fetching voltage data:', error));
+    }
+    
+    // Update the voltage display
+    function updateVoltageDisplay(data) {
+        const voltageDisplay = document.getElementById('voltageDisplay');
+        const currentDisplay = document.getElementById('currentDisplay');
+        const frequencyDisplay = document.getElementById('frequencyDisplay');
+        const powerFactorDisplay = document.getElementById('powerFactorDisplay');
+        const lastUpdated = document.getElementById('lastUpdated');
+        
+        // Update values
+        let voltage = data.data.voltage.toFixed(1);
+        voltageDisplay.innerHTML = `${voltage}<span class="h4">V</span>`;
+        currentDisplay.innerHTML = `${data.data.current.toFixed(1)}<span class="small">A</span>`;
+        frequencyDisplay.innerHTML = `${data.data.frequency.toFixed(1)}<span class="small">Hz</span>`;
+        powerFactorDisplay.innerHTML = `${data.data.power_factor.toFixed(2)}`;
+        
+        // Format timestamp
+        const timestamp = new Date(data.data.timestamp);
+        lastUpdated.textContent = timestamp.toLocaleTimeString();
+        
+        // Set color based on voltage level
+        voltageDisplay.className = 'voltage-display';
+        if (data.alert) {
+            if (data.alert.level === 'critical') {
+                voltageDisplay.classList.add('voltage-critical');
+            } else if (data.alert.level === 'warning') {
+                voltageDisplay.classList.add('voltage-warning');
+            }
+        } else {
+            voltageDisplay.classList.add('voltage-normal');
+        }
+    }
+    
+    // Update the chart with new data
+    function updateChart(data) {
+        const timestamp = new Date(data.data.timestamp);
+        const timeStr = timestamp.toLocaleTimeString();
+        
+        // Add new data point
+        chartData.labels.push(timeStr);
+        chartData.datasets[0].data.push(data.data.voltage);
+        
+        // Limit the number of points
+        if (chartData.labels.length > chartMaxPoints) {
+            chartData.labels.shift();
+            chartData.datasets[0].data.shift();
+        }
+        
+        // Update chart
+        voltageChart.update();
+    }
+    
+    // Update alert display
+    function updateAlertDisplay(data) {
+        const alertContainer = document.getElementById('alertContainer');
+        const alertBanner = document.getElementById('alertBanner');
+        const alertTitle = document.getElementById('alertTitle');
+        const alertMessage = document.getElementById('alertMessage');
+        const alertIcon = document.getElementById('alertIcon');
+        
+        if (data.alert) {
+            // Show alert
+            alertContainer.style.display = 'block';
+            
+            // Set alert level styling
+            alertBanner.className = 'alert-banner p-3';
+            if (data.alert.level === 'critical') {
+                alertBanner.classList.add('critical');
+                alertTitle.textContent = 'CRITICAL VOLTAGE ALERT';
+                alertIcon.setAttribute('stroke', '#dc3545');
+            } else {
+                alertBanner.classList.add('warning');
+                alertTitle.textContent = 'Voltage Warning';
+                alertIcon.setAttribute('stroke', '#ffc107');
+            }
+            
+            // Set alert message
+            alertMessage.textContent = data.alert.message;
+        } else {
+            // Hide alert
+            alertContainer.style.display = 'none';
+        }
+    }
+    
+    // Set up buttons for different conditions
+    document.querySelectorAll('.btn-condition').forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove active class from all buttons
+            document.querySelectorAll('.btn-condition').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to clicked button
+            this.classList.add('active');
+            
+            // Update current condition
+            currentCondition = this.dataset.condition;
+            
+            // Fetch data for the new condition
+            fetchVoltageData(currentCondition);
+        });
+    });
+    
+    // Auto-update toggle
+    document.getElementById('autoUpdateCheck').addEventListener('change', function() {
+        if (this.checked) {
+            // Start auto-update
+            updateInterval = setInterval(() => {
+                fetchVoltageData(currentCondition);
+            }, 3000);
+        } else {
+            // Stop auto-update
+            clearInterval(updateInterval);
+        }
+    });
+    
+    // Initial data fetch
+    fetchVoltageData('normal');
+    
+    // Start auto-update by default
+    updateInterval = setInterval(() => {
+        fetchVoltageData(currentCondition);
+    }, 3000);
+</script>
+{% endblock %}

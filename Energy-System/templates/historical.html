@@ -1,0 +1,493 @@
+{% extends "base.html" %}
+
+{% block title %}Historical Analysis{% endblock %}
+
+{% block extra_css %}
+<style>
+    .nav-pills .nav-link.active {
+        background-color: #3498db;
+    }
+    .trend-badge {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+    .trend-increasing {
+        background-color: rgba(231, 76, 60, 0.1);
+        color: #e74c3c;
+    }
+    .trend-decreasing {
+        background-color: rgba(46, 204, 113, 0.1);
+        color: #2ecc71;
+    }
+    .trend-neutral {
+        background-color: rgba(52, 152, 219, 0.1);
+        color: #3498db;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-1">Historical Analysis</h2>
+                    <p class="text-muted">Detailed analysis of your facility's energy data</p>
+                </div>
+                <div>
+                    <div class="btn-group" role="group">
+                        <a href="{{ url_for('historical_analysis', days=7) }}" class="btn btn-outline-primary {% if days == 7 %}active{% endif %}">7 Days</a>
+                        <a href="{{ url_for('historical_analysis', days=30) }}" class="btn btn-outline-primary {% if days == 30 %}active{% endif %}">30 Days</a>
+                        <a href="{{ url_for('historical_analysis', days=90) }}" class="btn btn-outline-primary {% if days == 90 %}active{% endif %}">90 Days</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Chart -->
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <ul class="nav nav-pills mb-3" id="chartTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="all-tab" data-bs-toggle="pill" data-bs-target="#all-data" type="button" role="tab">All Data</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="production-tab" data-bs-toggle="pill" data-bs-target="#production-data" type="button" role="tab">Production</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="consumption-tab" data-bs-toggle="pill" data-bs-target="#consumption-data" type="button" role="tab">Consumption</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="efficiency-tab" data-bs-toggle="pill" data-bs-target="#efficiency-data" type="button" role="tab">Efficiency</button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content" id="chartTabContent">
+                        <div class="tab-pane fade show active" id="all-data" role="tabpanel">
+                            <div class="chart-container" style="position: relative; height: 350px;">
+                                <canvas id="allDataChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="production-data" role="tabpanel">
+                            <div class="chart-container" style="position: relative; height: 350px;">
+                                <canvas id="productionChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="consumption-data" role="tabpanel">
+                            <div class="chart-container" style="position: relative; height: 350px;">
+                                <canvas id="consumptionChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="efficiency-data" role="tabpanel">
+                            <div class="chart-container" style="position: relative; height: 350px;">
+                                <canvas id="efficiencyChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Statistical Summary -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title mb-0">Statistical Summary</h5>
+                        <span data-feather="bar-chart-2" class="text-primary"></span>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-12 mb-3">
+                            <h6 class="text-muted">Energy Consumption Trend</h6>
+                            <div class="d-flex align-items-center">
+                                {% if trend_analysis.trend == 'increasing' %}
+                                <span class="trend-badge trend-increasing me-2">
+                                    <span data-feather="trending-up" class="me-1" style="width: 14px; height: 14px;"></span>
+                                    Increasing
+                                </span>
+                                {% elif trend_analysis.trend == 'decreasing' %}
+                                <span class="trend-badge trend-decreasing me-2">
+                                    <span data-feather="trending-down" class="me-1" style="width: 14px; height: 14px;"></span>
+                                    Decreasing
+                                </span>
+                                {% else %}
+                                <span class="trend-badge trend-neutral me-2">
+                                    <span data-feather="minus" class="me-1" style="width: 14px; height: 14px;"></span>
+                                    Stable
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light border-0">
+                                <div class="card-body">
+                                    <h6 class="text-muted mb-2">Energy Production</h6>
+                                    <div class="stats-grid">
+                                        <div class="stat-item mb-2">
+                                            <div class="stat-label">Average</div>
+                                            <div class="stat-value">{{ trend_analysis.statistics.production.mean|round(1) }} kWh</div>
+                                        </div>
+                                        <div class="stat-item mb-2">
+                                            <div class="stat-label">Maximum</div>
+                                            <div class="stat-value">{{ trend_analysis.statistics.production.max|round(1) }} kWh</div>
+                                        </div>
+                                        <div class="stat-item mb-2">
+                                            <div class="stat-label">Minimum</div>
+                                            <div class="stat-value">{{ trend_analysis.statistics.production.min|round(1) }} kWh</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <div class="stat-label">Variability</div>
+                                            <div class="stat-value">±{{ trend_analysis.statistics.production.std|round(1) }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light border-0">
+                                <div class="card-body">
+                                    <h6 class="text-muted mb-2">Energy Consumption</h6>
+                                    <div class="stats-grid">
+                                        <div class="stat-item mb-2">
+                                            <div class="stat-label">Average</div>
+                                            <div class="stat-value">{{ trend_analysis.statistics.consumption.mean|round(1) }} kWh</div>
+                                        </div>
+                                        <div class="stat-item mb-2">
+                                            <div class="stat-label">Maximum</div>
+                                            <div class="stat-value">{{ trend_analysis.statistics.consumption.max|round(1) }} kWh</div>
+                                        </div>
+                                        <div class="stat-item mb-2">
+                                            <div class="stat-label">Minimum</div>
+                                            <div class="stat-value">{{ trend_analysis.statistics.consumption.min|round(1) }} kWh</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <div class="stat-label">Variability</div>
+                                            <div class="stat-value">±{{ trend_analysis.statistics.consumption.std|round(1) }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Insights and Recommendations -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">Insights & Recommendations</h5>
+                        <span data-feather="cpu" class="text-primary"></span>
+                    </div>
+                    
+                    <div class="insights-container">
+                        {% if insights %}
+                            {% for insight in insights %}
+                                {% if insight.type == 'warning' %}
+                                    <div class="alert alert-warning">
+                                        <span data-feather="alert-triangle" class="me-2"></span>
+                                        {{ insight.message }}
+                                    </div>
+                                {% elif insight.type == 'alert' %}
+                                    <div class="alert alert-danger">
+                                        <span data-feather="alert-circle" class="me-2"></span>
+                                        {{ insight.message }}
+                                    </div>
+                                {% elif insight.type == 'success' %}
+                                    <div class="alert alert-success">
+                                        <span data-feather="check-circle" class="me-2"></span>
+                                        {{ insight.message }}
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-info">
+                                        <span data-feather="info" class="me-2"></span>
+                                        {{ insight.message }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state">
+                                <span data-feather="info" style="width: 48px; height: 48px" class="text-muted mb-3"></span>
+                                <p>No insights available yet. Collect more data for better recommendations.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Peak Hours Chart -->
+        <div class="col-lg-12 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Peak Usage Hours Analysis</h5>
+                    <div class="peak-hours-chart-container">
+                        <canvas id="peakHoursChart"></canvas>
+                    </div>
+                    <div class="mt-3">
+                        <p class="text-muted">This chart shows when your facility typically experiences peak energy usage. Understanding these patterns can help you optimize energy consumption and reduce costs.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Feather icons
+        feather.replace();
+        
+        // Set up the All Data Chart
+        const allDataChartCtx = document.getElementById('allDataChart').getContext('2d');
+        const allDataChart = new Chart(allDataChartCtx, {
+            type: 'line',
+            data: {
+                labels: {{ timestamps|tojson }},
+                datasets: [
+                    {
+                        label: 'Energy Production (kWh)',
+                        data: {{ production|tojson }},
+                        backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                        borderColor: 'rgba(46, 204, 113, 1)',
+                        borderWidth: 2,
+                        pointRadius: 1,
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Energy Consumption (kWh)',
+                        data: {{ consumption|tojson }},
+                        backgroundColor: 'rgba(231, 76, 60, 0.2)',
+                        borderColor: 'rgba(231, 76, 60, 1)',
+                        borderWidth: 2,
+                        pointRadius: 1,
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Energy (kWh)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                }
+            }
+        });
+        
+        // Set up the Production Chart
+        const productionChartCtx = document.getElementById('productionChart').getContext('2d');
+        const productionChart = new Chart(productionChartCtx, {
+            type: 'line',
+            data: {
+                labels: {{ timestamps|tojson }},
+                datasets: [
+                    {
+                        label: 'Energy Production (kWh)',
+                        data: {{ production|tojson }},
+                        backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                        borderColor: 'rgba(46, 204, 113, 1)',
+                        borderWidth: 2,
+                        pointRadius: 2,
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Energy Production (kWh)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Set up the Consumption Chart
+        const consumptionChartCtx = document.getElementById('consumptionChart').getContext('2d');
+        const consumptionChart = new Chart(consumptionChartCtx, {
+            type: 'line',
+            data: {
+                labels: {{ timestamps|tojson }},
+                datasets: [
+                    {
+                        label: 'Energy Consumption (kWh)',
+                        data: {{ consumption|tojson }},
+                        backgroundColor: 'rgba(231, 76, 60, 0.2)',
+                        borderColor: 'rgba(231, 76, 60, 1)',
+                        borderWidth: 2,
+                        pointRadius: 2,
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Energy Consumption (kWh)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Set up the Efficiency Chart
+        const efficiencyChartCtx = document.getElementById('efficiencyChart').getContext('2d');
+        const efficiencyChart = new Chart(efficiencyChartCtx, {
+            type: 'line',
+            data: {
+                labels: {{ timestamps|tojson }},
+                datasets: [
+                    {
+                        label: 'System Efficiency (%)',
+                        data: {{ efficiency|tojson }},
+                        backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        borderWidth: 2,
+                        pointRadius: 2,
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 50,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Efficiency (%)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Set up the Peak Hours Chart
+        const peakHoursChartCtx = document.getElementById('peakHoursChart').getContext('2d');
+        
+        // Create data for the peak hours chart
+        const hours = [];
+        const peakCounts = [];
+        
+        {% if trend_analysis.peak_hours %}
+            {% for hour, count in trend_analysis.peak_hours.items() %}
+                hours.push('{{ hour }}:00');
+                peakCounts.push({{ count }});
+            {% endfor %}
+        {% else %}
+            for (let i = 0; i < 24; i++) {
+                hours.push(i + ':00');
+                peakCounts.push(0);
+            }
+        {% endif %}
+        
+        const peakHoursChart = new Chart(peakHoursChartCtx, {
+            type: 'bar',
+            data: {
+                labels: hours,
+                datasets: [
+                    {
+                        label: 'Peak Usage Frequency',
+                        data: peakCounts,
+                        backgroundColor: 'rgba(241, 196, 15, 0.7)',
+                        borderColor: 'rgba(241, 196, 15, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Frequency'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Hour of Day'
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

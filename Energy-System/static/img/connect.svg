@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="300" rx="8" fill="#f8f9fa"/>
+  
+  <!-- House with solar panels -->
+  <path d="M130,160 L200,100 L270,160 L270,220 L130,220 Z" fill="#34495e"/>
+  <rect x="140" y="170" width="30" height="50" fill="#3498db"/>
+  <rect x="190" y="190" width="40" height="30" fill="#2c3e50"/>
+  
+  <!-- Solar panels on roof -->
+  <rect x="155" y="120" width="90" height="30" fill="#2980b9"/>
+  <line x1="155" y1="130" x2="245" y2="130" stroke="#fff" stroke-width="1"/>
+  <line x1="155" y1="140" x2="245" y2="140" stroke="#fff" stroke-width="1"/>
+  <line x1="175" y1="120" x2="175" y2="150" stroke="#fff" stroke-width="1"/>
+  <line x1="195" y1="120" x2="195" y2="150" stroke="#fff" stroke-width="1"/>
+  <line x1="215" y1="120" x2="215" y2="150" stroke="#fff" stroke-width="1"/>
+  <line x1="235" y1="120" x2="235" y2="150" stroke="#fff" stroke-width="1"/>
+  
+  <!-- Central energy hub -->
+  <circle cx="325" cy="170" r="40" fill="#3498db"/>
+  <circle cx="325" cy="170" r="30" fill="#2c3e50"/>
+  <circle cx="325" cy="170" r="20" fill="#2ecc71"/>
+  <circle cx="325" cy="170" r="10" fill="#f1c40f"/>
+  
+  <!-- Connections -->
+  <path d="M235,150 C260,150 280,160 285,170" stroke="#3498db" stroke-width="3" stroke-dasharray="5,5"/>
+  <path d="M285,170 C290,160 300,150 325,150" stroke="#3498db" stroke-width="3"/>
+  
+  <!-- Devices -->
+  <rect x="75" y="150" width="30" height="20" rx="2" fill="#95a5a6"/>
+  <rect x="80" y="155" width="20" height="10" rx="1" fill="#34495e"/>
+  <path d="M95,150 C100,130 110,120 125,120" stroke="#3498db" stroke-width="3" stroke-dasharray="5,5"/>
+  
+  <rect x="75" y="190" width="30" height="30" rx="2" fill="#95a5a6"/>
+  <rect x="80" y="195" width="20" height="20" rx="1" fill="#34495e"/>
+  <path d="M105,205 C115,205 125,210 130,210" stroke="#3498db" stroke-width="3" stroke-dasharray="5,5"/>
+  
+  <!-- Cloud computing symbol -->
+  <ellipse cx="325" cy="80" rx="40" ry="20" fill="#ecf0f1"/>
+  <ellipse cx="300" cy="70" rx="25" ry="15" fill="#ecf0f1"/>
+  <ellipse cx="350" cy="70" rx="25" ry="15" fill="#ecf0f1"/>
+  
+  <!-- Data connection to cloud -->
+  <path d="M325,130 C325,110 325,100 325,80" stroke="#3498db" stroke-width="3" stroke-dasharray="5,5"/>
+  
+  <!-- Icons -->
+  <circle cx="325" cy="170" r="5" fill="#fff"/>
+  <rect x="322" y="60" width="6" height="10" fill="#7f8c8d"/>
+  <rect x="317" y="65" width="16" height="10" rx="2" fill="#7f8c8d"/>
+</svg>

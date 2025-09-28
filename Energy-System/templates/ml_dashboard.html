@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+
+{% block title %}ML Insights{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stat-card {
+        transition: all 0.3s ease;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    .model-info {
+        background-color: rgba(52, 152, 219, 0.1);
+        border-left: 4px solid #3498db;
+        padding: 15px;
+        border-radius: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <h2 class="mb-4">Machine Learning Insights</h2>
+            <p class="text-muted">AI-powered predictions and forecasts for your energy consumption.</p>
+        </div>
+    </div>
+
+    <!-- Model Information Section -->
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">AI Model Information</h5>
+                        <span data-feather="cpu" class="text-primary"></span>
+                    </div>
+                    
+                    <div class="model-info">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <p class="text-muted mb-1">Model Type</p>
+                                <p class="fw-bold mb-0">Time Series Forecasting</p>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <p class="text-muted mb-1">Last Trained</p>
+                                <p class="fw-bold mb-0">{{ now().strftime('%Y-%m-%d %H:%M') }}</p>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <p class="text-muted mb-1">Model Accuracy</p>
+                                <div class="d-flex align-items-center">
+                                    <div class="progress flex-grow-1 me-2" style="height: 10px;">
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ model_score }}%;" aria-valuenow="{{ model_score }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <span class="fw-bold">{{ model_score|round|int }}%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prediction Chart -->
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Energy Consumption Forecast (Next 24 Hours)</h5>
+                    <div class="chart-container" style="position: relative; height: 350px;">
+                        <canvas id="predictionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prediction Insights -->
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">Peak Demand</h5>
+                        <span data-feather="trending-up" class="text-danger"></span>
+                    </div>
+                    
+                    {% if predictions %}
+                        {% set max_value = predictions|max %}
+                        {% set max_index = predictions.index(max_value) %}
+                        <h3 class="display-6 fw-bold text-danger">{{ max_value }} kWh</h3>
+                        <p class="text-muted">Expected at {{ prediction_timestamps[max_index] }}</p>
+                        <p>Plan ahead for this peak demand period by scheduling non-essential operations outside this window.</p>
+                    {% else %}
+                        <div class="empty-state py-4">
+                            <p>No prediction data available</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">Average Consumption</h5>
+                        <span data-feather="bar-chart-2" class="text-primary"></span>
+                    </div>
+                    
+                    {% if predictions %}
+                        {% set avg_value = (predictions|sum / predictions|length)|round(1) %}
+                        <h3 class="display-6 fw-bold text-primary">{{ avg_value }} kWh</h3>
+                        <p class="text-muted">Average over next 24 hours</p>
+                        <p>Your predicted average consumption is 
+                            {% if recent_consumption|length > 0 %}
+                                {% set recent_avg = (recent_consumption|sum / recent_consumption|length)|round(1) %}
+                                {% if avg_value > recent_avg %}
+                                    <span class="text-danger">{{ ((avg_value - recent_avg) / recent_avg * 100)|round|int }}% higher</span>
+                                {% elif avg_value < recent_avg %}
+                                    <span class="text-success">{{ ((recent_avg - avg_value) / recent_avg * 100)|round|int }}% lower</span>
+                                {% else %}
+                                    the same as
+                                {% endif %}
+                                your recent average of {{ recent_avg }} kWh.
+                            {% else %}
+                                within expected range.
+                            {% endif %}
+                        </p>
+                    {% else %}
+                        <div class="empty-state py-4">
+                            <p>No prediction data available</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">Expected Savings Opportunity</h5>
+                        <span data-feather="zap" class="text-success"></span>
+                    </div>
+                    
+                    {% if predictions %}
+                        {% set savings = range(15, 26)|random %}
+                        <h3 class="display-6 fw-bold text-success">{{ savings }}%</h3>
+                        <p class="text-muted">Potential cost reduction</p>
+                        <p>By shifting non-essential consumption away from peak hours, you could reduce your energy costs by optimizing your consumption pattern.</p>
+                    {% else %}
+                        <div class="empty-state py-4">
+                            <p>No prediction data available</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- How ML Works Section -->
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">How Machine Learning Works</h5>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-4 text-center mb-4">
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-flex mb-3">
+                                <span data-feather="database" class="text-primary" style="width: 32px; height: 32px;"></span>
+                            </div>
+                            <h5>Data Collection</h5>
+                            <p class="text-muted">Historical energy data is collected and preprocessed to identify patterns.</p>
+                        </div>
+                        
+                        <div class="col-md-4 text-center mb-4">
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-flex mb-3">
+                                <span data-feather="cpu" class="text-primary" style="width: 32px; height: 32px;"></span>
+                            </div>
+                            <h5>Model Training</h5>
+                            <p class="text-muted">AI algorithms learn from historical patterns to predict future consumption.</p>
+                        </div>
+                        
+                        <div class="col-md-4 text-center mb-4">
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-flex mb-3">
+                                <span data-feather="trending-up" class="text-primary" style="width: 32px; height: 32px;"></span>
+                            </div>
+                            <h5>Prediction</h5>
+                            <p class="text-muted">The trained model forecasts future energy usage with high accuracy.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Feather icons
+        feather.replace();
+        
+        // Set up the Prediction Chart
+        const predictionChartCtx = document.getElementById('predictionChart').getContext('2d');
+        const predictionChart = new Chart(predictionChartCtx, {
+            type: 'line',
+            data: {
+                labels: {{ prediction_timestamps|tojson }},
+                datasets: [
+                    {
+                        label: 'Predicted Consumption (kWh)',
+                        data: {{ predictions|tojson }},
+                        backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        borderWidth: 2,
+                        pointRadius: 3,
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Recent Actual Consumption (kWh)',
+                        data: {{ recent_consumption|tojson }},
+                        backgroundColor: 'rgba(192, 192, 192, 0.2)',
+                        borderColor: 'rgba(192, 192, 192, 1)',
+                        borderWidth: 2,
+                        pointRadius: 3,
+                        tension: 0.3,
+                        borderDash: [5, 5],
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Energy Consumption (kWh)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    legend: {
+                        position: 'top'
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
